@@ -52,7 +52,7 @@ export default function ProfileScreen() {
           style={styles.botao}
           labelStyle={styles.botaoTexto}
           textColor={colors.primary}
-          onPress={() => alert('Funcionalidade futura: editar perfil')}
+          onPress={() => navigation.navigate('EditProfile')}
         >
           Editar Perfil
         </Button>
