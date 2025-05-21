@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { Image } from 'react-native';
 
 export default function LoginScreen() {
   const { colors } = useTheme();
@@ -19,6 +20,8 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
+    <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+
       <Text variant="headlineMedium" style={styles.title}>Login</Text>
 
       <TextInput
@@ -55,4 +58,11 @@ const styles = StyleSheet.create({
   input: { marginBottom: 16 },
   button: { marginTop: 8 },
   link: { marginTop: 24, textAlign: 'center' },
+
+  logo: {
+  width: 200,
+  height: 200,
+  alignSelf: 'center',
+  marginBottom: 28,
+},
 });

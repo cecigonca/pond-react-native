@@ -1,5 +1,5 @@
 import React from 'react';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
@@ -7,9 +7,25 @@ import HomeScreen from './screens/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
+// 🎨 Tema personalizado com dourado, preto e branco
+const customTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#AF8155',       // Dourado quente
+    onPrimary: '#FFFFFF',     // Texto sobre o dourado
+    secondary: '#906341',     // Cobre escuro
+    background: '#FFFFFF',    // Fundo branco
+    surface: '#F5F5F5',       // Cartões / inputs
+    onSurface: '#333333',     // Texto sobre superfícies claras
+    text: '#000000',          // Texto geral
+    error: '#B00020',         // Vermelho padrão para erro
+  },
+};
+
 export default function App() {
   return (
-    <PaperProvider>
+    <PaperProvider theme={customTheme}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginScreen} />
