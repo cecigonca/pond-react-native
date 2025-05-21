@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, FlatList, StyleSheet, Image } from 'react-native';
 import { Appbar, Card, FAB, useTheme } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
 const produtos = Array.from({ length: 10 }, (_, i) => ({
   id: i.toString(),
@@ -11,6 +12,7 @@ const produtos = Array.from({ length: 10 }, (_, i) => ({
 export default function HomeScreen() {
   const [fabOpen, setFabOpen] = React.useState(false);
   const { colors } = useTheme();
+  const navigation = useNavigation<any>();
 
   return (
     <>
@@ -34,7 +36,7 @@ export default function HomeScreen() {
         <Appbar.Action
           icon="account"
           color={colors.primary}
-          onPress={() => alert('Perfil')}
+          onPress={() => navigation.navigate('Profile')}
         />
       </Appbar.Header>
 
