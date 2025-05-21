@@ -31,7 +31,7 @@ export default function HomeScreen() {
         <Appbar.Action
           icon="bell"
           color={colors.primary}
-          onPress={() => alert('Notificações')}
+          onPress={() => navigation.navigate('Notifications')}
         />
         <Appbar.Action
           icon="account"
