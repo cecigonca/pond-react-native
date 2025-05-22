@@ -4,6 +4,7 @@ import { Text, TextInput, Button, Appbar, useTheme } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import { adicionarNotificacao } from '../utils/Notifications';
 
 export default function EditProfileScreen() {
   const navigation = useNavigation();
@@ -86,6 +87,8 @@ export default function EditProfileScreen() {
       );
 
       await AsyncStorage.setItem('usuarios', JSON.stringify(atualizados));
+
+      await adicionarNotificacao('Perfil atualizado', `O perfil de ${nome} foi atualizado.`);
 
       setMensagemSucesso('Perfil atualizado com sucesso!');
       setMensagemInfo('');

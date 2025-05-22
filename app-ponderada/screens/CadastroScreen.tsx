@@ -3,6 +3,7 @@ import { View, StyleSheet, Alert, Image, ScrollView } from 'react-native';
 import { TextInput, Button, Text, useTheme, Card, Appbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { adicionarNotificacao } from '../utils/Notifications';
 
 export default function CadastroScreen() {
   const { colors } = useTheme();
@@ -30,9 +31,11 @@ export default function CadastroScreen() {
       }
 
       const dataCadastro = new Date().toISOString();
-      const novoUsuario = { nome, email, telefone, senha, dataCadastro};
+      const novoUsuario = { nome, email, telefone, senha, dataCadastro };
       const atualizados = [...usuarios, novoUsuario];
       await AsyncStorage.setItem('usuarios', JSON.stringify(atualizados));
+
+      await adicionarNotificacao('Novo usuário', `O usuário ${nome} foi cadastrado.`);
 
       Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
       navigation.goBack();

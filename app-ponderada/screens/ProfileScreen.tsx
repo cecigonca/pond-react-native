@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, Avatar, useTheme, Button, Appbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, StackActions } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const { colors } = useTheme();
@@ -42,6 +42,11 @@ export default function ProfileScreen() {
     } catch {
       return 'Desconhecido';
     }
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('usuarioLogado');
+    navigation.dispatch(StackActions.replace('Login'));
   };
 
   return (
@@ -97,6 +102,15 @@ export default function ProfileScreen() {
           onPress={() => navigation.navigate('EditProfile')}
         >
           Editar Perfil
+        </Button>
+
+        <Button
+          mode="contained"
+          style={[styles.botaoLogout, { backgroundColor: '#E53935' }]}
+          labelStyle={styles.botaoTexto}
+          onPress={handleLogout}
+        >
+          Sair da Conta
         </Button>
       </View>
     </>
@@ -154,5 +168,13 @@ const styles = StyleSheet.create({
   botaoTexto: {
     fontWeight: '500',
     fontSize: 16,
+  },
+  botaoLogout: {
+    marginTop: 16,
+    alignSelf: 'center',
+    borderRadius: 24,
+    width: 200,
+    height: 48,
+    justifyContent: 'center',
   },
 });

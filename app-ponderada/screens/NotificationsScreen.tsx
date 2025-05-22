@@ -1,17 +1,28 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { Appbar, Text, List, useTheme } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-
-const notificacoesMock = [
-  { id: '1', titulo: 'Novo produto adicionado', descricao: 'Camisa ecológica foi adicionada ao catálogo.' },
-  { id: '2', titulo: 'Perfil atualizado', descricao: 'Seus dados de perfil foram atualizados com sucesso.' },
-  { id: '3', titulo: 'Promoção ativa', descricao: 'Produtos selecionados com 20% off por tempo limitado!' },
-];
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function NotificationsScreen() {
   const navigation = useNavigation();
   const { colors } = useTheme();
+  const [notificacoes, setNotificacoes] = useState<any[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const carregar = async () => {
+        try {
+          const data = await AsyncStorage.getItem('notificacoes');
+          const lista = data ? JSON.parse(data) : [];
+          setNotificacoes(lista);
+        } catch (error) {
+          console.error('Erro ao carregar notificações:', error);
+        }
+      };
+      carregar();
+    }, [])
+  );
 
   return (
     <>
@@ -21,17 +32,20 @@ export default function NotificationsScreen() {
       </Appbar.Header>
 
       <FlatList
-        data={notificacoesMock}
+        data={notificacoes}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.lista}
         renderItem={({ item }) => (
           <List.Item
             title={item.titulo}
-            description={item.descricao}
+            description={`${item.descricao}\n${new Date(item.data).toLocaleString('pt-BR')}`}
             left={(props) => <List.Icon {...props} icon="bell" color={colors.primary} />}
             style={styles.item}
           />
         )}
+        ListEmptyComponent={
+          <Text style={styles.vazio}>Nenhuma notificação por enquanto.</Text>
+        }
       />
     </>
   );
@@ -46,5 +60,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     borderRadius: 8,
     marginBottom: 12,
+  },
+  vazio: {
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#999',
+    fontSize: 16,
   },
 });
