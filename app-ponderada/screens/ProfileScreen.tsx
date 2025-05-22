@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, Avatar, useTheme, Button, Appbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const { colors } = useTheme();
@@ -12,23 +12,26 @@ export default function ProfileScreen() {
     email: '',
     telefone: '',
     dataCadastro: '',
+    imagemPerfil: '',
   });
 
-  useEffect(() => {
-    const carregarUsuario = async () => {
-      try {
-        const dados = await AsyncStorage.getItem('usuarios');
-        const todos = dados ? JSON.parse(dados) : [];
-        const emailLogado = await AsyncStorage.getItem('usuarioLogado');
-        const encontrado = todos.find((u: any) => u.email === emailLogado);
-        if (encontrado) setUsuario(encontrado);
-      } catch (e) {
-        console.error('Erro ao carregar usuário:', e);
-      }
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const carregarUsuario = async () => {
+        try {
+          const dados = await AsyncStorage.getItem('usuarios');
+          const todos = dados ? JSON.parse(dados) : [];
+          const emailLogado = await AsyncStorage.getItem('usuarioLogado');
+          const encontrado = todos.find((u: any) => u.email === emailLogado);
+          if (encontrado) setUsuario(encontrado);
+        } catch (e) {
+          console.error('Erro ao carregar usuário:', e);
+        }
+      };
 
-    carregarUsuario();
-  }, []);
+      carregarUsuario();
+    }, [])
+  );
 
   const formatarData = (dataISO: string) => {
     try {
@@ -52,7 +55,11 @@ export default function ProfileScreen() {
         <View style={styles.topSection}>
           <Avatar.Image
             size={180}
-            source={require('../assets/avatar.png')}
+            source={
+              usuario.imagemPerfil
+                ? { uri: usuario.imagemPerfil }
+                : require('../assets/avatar.png')
+            }
             style={{ backgroundColor: colors.primary }}
           />
           <Text variant="headlineSmall" style={[styles.nome, { color: colors.primary }]}>
