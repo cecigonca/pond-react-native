@@ -7,6 +7,7 @@ import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
+import ProductDetailsScreen from './screens/ProductDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +37,7 @@ export default function App() {
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="EditProfile" component={EditProfileScreen} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

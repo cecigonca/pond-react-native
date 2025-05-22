@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FlatList, StyleSheet, Image, Text } from 'react-native';
+import { View, FlatList, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import { Appbar, FAB, useTheme } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
@@ -7,7 +7,9 @@ import * as ImagePicker from 'expo-image-picker';
 const produtos = Array.from({ length: 10 }, (_, i) => ({
   id: i.toString(),
   nome: `Produto ${i + 1}`,
-  imagem: require('../assets/produto.png'), // substitua por sua imagem real
+  preco: `R$ ${(i + 1) * 10},00`,
+  descricao: `Descrição do produto ${i + 1}`,
+  imagem: require('../assets/produto.png'), // ajuste para suas imagens reais
 }));
 
 export default function HomeScreen() {
@@ -81,12 +83,24 @@ export default function HomeScreen() {
         numColumns={2}
         contentContainerStyle={styles.galeria}
         renderItem={({ item }) => (
-          <View style={styles.itemGaleria}>
+          <TouchableOpacity
+            style={styles.itemGaleria}
+            onPress={() =>
+              navigation.navigate('ProductDetails', {
+                produto: {
+                  nome: item.nome,
+                  descricao: item.descricao,
+                  preco: item.preco,
+                  imagem: item.imagem,
+                },
+              })
+            }
+          >
             <Image source={item.imagem} style={styles.fotoProduto} />
             <Text style={[styles.nomeProduto, { color: colors.primary }]}>
               {item.nome}
             </Text>
-          </View>
+          </TouchableOpacity>
         )}
       />
 
