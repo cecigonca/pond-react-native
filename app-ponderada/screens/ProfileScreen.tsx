@@ -59,7 +59,7 @@ export default function ProfileScreen() {
       <View style={styles.container}>
         <View style={styles.topSection}>
           <Avatar.Image
-            size={180}
+            size={160}
             source={
               usuario.imagemPerfil
                 ? { uri: usuario.imagemPerfil }
@@ -94,24 +94,36 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <Button
-          mode="outlined"
-          style={styles.botao}
-          labelStyle={styles.botaoTexto}
-          textColor={colors.primary}
-          onPress={() => navigation.navigate('EditProfile')}
-        >
-          Editar Perfil
-        </Button>
+        <View style={styles.botoesContainer}>
+          <Button
+            mode="outlined"
+            style={styles.botao}
+            labelStyle={styles.botaoTexto}
+            textColor={colors.primary}
+            onPress={() => navigation.navigate('Favorites')}
+          >
+            Meus Favoritos
+          </Button>
 
-        <Button
-          mode="contained"
-          style={[styles.botaoLogout, { backgroundColor: '#E53935' }]}
-          labelStyle={styles.botaoTexto}
-          onPress={handleLogout}
-        >
-          Sair da Conta
-        </Button>
+          <Button
+            mode="outlined"
+            style={styles.botao}
+            labelStyle={styles.botaoTexto}
+            textColor={colors.primary}
+            onPress={() => navigation.navigate('EditProfile')}
+          >
+            Editar Perfil
+          </Button>
+
+          <Button
+            mode="contained"
+            style={styles.botaoLogout}
+            labelStyle={styles.botaoTexto}
+            onPress={handleLogout}
+          >
+            Sair da Conta
+          </Button>
+        </View>
       </View>
     </>
   );
@@ -127,9 +139,10 @@ const styles = StyleSheet.create({
   topSection: {
     alignItems: 'center',
     marginTop: 36,
+    marginBottom: 24,
   },
   nome: {
-    marginTop: 20,
+    marginTop: 16,
     marginBottom: 4,
   },
   role: {
@@ -137,14 +150,14 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   card: {
-    marginTop: 24,
     padding: 24,
     backgroundColor: '#F9F6F3',
-    borderRadius: 12,
+    borderRadius: 16,
     elevation: 2,
+    marginBottom: 32,
   },
   infoGroup: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
   label: {
     fontSize: 12,
@@ -155,26 +168,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  botoesContainer: {
+    gap: 8,
+    alignItems: 'center',
+  },
   botao: {
-    marginTop: 24,
-    alignSelf: 'center',
     borderColor: '#AF8155',
-    borderWidth: 1.3,
+    borderWidth: 1.2,
     borderRadius: 24,
-    width: 200,
+    width: 220,
+    height: 48,
+    justifyContent: 'center',
+  },
+  botaoLogout: {
+    marginTop: 12,
+    backgroundColor: '#E53935',
+    borderRadius: 24,
+    width: 220,
     height: 48,
     justifyContent: 'center',
   },
   botaoTexto: {
     fontWeight: '500',
     fontSize: 16,
-  },
-  botaoLogout: {
-    marginTop: 16,
-    alignSelf: 'center',
-    borderRadius: 24,
-    width: 200,
-    height: 48,
-    justifyContent: 'center',
   },
 });

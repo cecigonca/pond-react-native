@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, Modal, Pressable } from 'react-native';
 import { Appbar, Text, IconButton, useTheme } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { adicionarNotificacao } from '../utils/Notifications';
 
 export default function ProductDetailsScreen() {
   const { colors } = useTheme();
@@ -18,6 +20,44 @@ export default function ProductDetailsScreen() {
   };
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [isFavorito, setIsFavorito] = useState(false);
+
+  useEffect(() => {
+    const verificarFavorito = async () => {
+      const email = await AsyncStorage.getItem('usuarioLogado');
+      const data = await AsyncStorage.getItem(`favoritos_${email}`);
+      const favoritos = data ? JSON.parse(data) : [];
+      const existe = favoritos.some((p: any) => p.nome === produto.nome);
+      setIsFavorito(existe);
+    };
+    verificarFavorito();
+  }, []);
+
+  const alternarFavorito = async () => {
+    const email = await AsyncStorage.getItem('usuarioLogado');
+    if (!email) return;
+
+    const chave = `favoritos_${email}`;
+    const data = await AsyncStorage.getItem(chave);
+    const favoritos = data ? JSON.parse(data) : [];
+
+    const jaExiste = favoritos.some((p: any) => p.nome === produto.nome);
+
+    let atualizados;
+
+    if (jaExiste) {
+      // desfavoritar
+      atualizados = favoritos.filter((p: any) => p.nome !== produto.nome);
+      setIsFavorito(false);
+    } else {
+      // favoritar
+      atualizados = [produto, ...favoritos];
+      setIsFavorito(true);
+      await adicionarNotificacao('Produto favoritado', `${produto.nome} foi adicionado aos favoritos.`);
+    }
+
+    await AsyncStorage.setItem(chave, JSON.stringify(atualizados));
+  };
 
   return (
     <>
@@ -33,18 +73,18 @@ export default function ProductDetailsScreen() {
 
         <View style={styles.content}>
           <View style={styles.headerRow}>
-            <Text variant="titleLarge" style={[styles.nome, { color: colors.primary }]}>  
+            <Text variant="titleLarge" style={[styles.nome, { color: colors.primary }]}>
               {produto.nome}
             </Text>
             <IconButton
-              icon="heart-outline"
-              size={24}
-              onPress={() => alert('Favorito!')}
+              icon={isFavorito ? 'heart' : 'heart-outline'}
+              size={26}
+              onPress={alternarFavorito}
               iconColor={colors.primary}
             />
           </View>
 
-          <Text variant="titleMedium" style={[styles.preco, { color: colors.secondary }]}>  
+          <Text variant="titleMedium" style={[styles.preco, { color: colors.secondary }]}>
             {produto.preco}
           </Text>
 
