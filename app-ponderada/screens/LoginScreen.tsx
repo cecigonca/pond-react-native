@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image, Alert, TouchableOpacity } from 'react-native';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import { Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const { colors } = useTheme();
@@ -10,17 +10,35 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const handleLogin = () => {
-    if (email && senha) {
-      navigation.navigate('Home');
-    } else {
-      alert('Preencha todos os campos');
+  const handleLogin = async () => {
+    if (!email || !senha) {
+      Alert.alert('Erro', 'Preencha todos os campos');
+      return;
+    }
+
+    try {
+      const stored = await AsyncStorage.getItem('usuarios');
+      const usuarios = stored ? JSON.parse(stored) : [];
+
+      const usuarioValido = usuarios.find(
+        (u: any) => u.email === email && u.senha === senha
+      );
+
+      if (usuarioValido) {
+        await AsyncStorage.setItem('usuarioLogado', JSON.stringify(usuarioValido));
+        navigation.navigate('Home');
+      } else {
+        Alert.alert('Erro', 'E-mail ou senha inválidos');
+      }
+    } catch (error) {
+      console.error('Erro ao realizar login:', error);
+      Alert.alert('Erro', 'Não foi possível realizar o login');
     }
   };
 
   return (
     <View style={styles.container}>
-    <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+      <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
 
       <Text variant="headlineMedium" style={styles.title}>Login</Text>
 
@@ -29,6 +47,7 @@ export default function LoginScreen() {
         value={email}
         onChangeText={setEmail}
         mode="outlined"
+        autoCapitalize="none"
         style={styles.input}
       />
 
@@ -45,9 +64,11 @@ export default function LoginScreen() {
         Entrar
       </Button>
 
-      <Text style={[styles.link, { color: colors.primary }]}>
-        Cadastrar ou Esqueceu a senha?
-      </Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
+        <Text style={[styles.link, { color: colors.primary }]}>
+          Cadastrar-se ou Esqueceu a senha?
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -58,11 +79,10 @@ const styles = StyleSheet.create({
   input: { marginBottom: 16 },
   button: { marginTop: 8 },
   link: { marginTop: 24, textAlign: 'center' },
-
   logo: {
-  width: 200,
-  height: 200,
-  alignSelf: 'center',
-  marginBottom: 28,
-},
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+    marginBottom: 28,
+  },
 });
