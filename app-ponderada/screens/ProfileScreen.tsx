@@ -1,11 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, Avatar, useTheme, Button, Appbar } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation();
+  const [usuario, setUsuario] = useState({
+    nome: '',
+    email: '',
+    telefone: '',
+    dataCadastro: '',
+  });
+
+  useEffect(() => {
+    const carregarUsuario = async () => {
+      try {
+        const dados = await AsyncStorage.getItem('usuarios');
+        const todos = dados ? JSON.parse(dados) : [];
+        const emailLogado = await AsyncStorage.getItem('usuarioLogado');
+        const encontrado = todos.find((u: any) => u.email === emailLogado);
+        if (encontrado) setUsuario(encontrado);
+      } catch (e) {
+        console.error('Erro ao carregar usuário:', e);
+      }
+    };
+
+    carregarUsuario();
+  }, []);
+
+  const formatarData = (dataISO: string) => {
+    try {
+      return new Date(dataISO).toLocaleDateString('pt-BR', {
+        month: 'short',
+        year: 'numeric',
+      });
+    } catch {
+      return 'Desconhecido';
+    }
+  };
 
   return (
     <>
@@ -15,7 +49,6 @@ export default function ProfileScreen() {
       </Appbar.Header>
 
       <View style={styles.container}>
-        {/* Bloco de topo */}
         <View style={styles.topSection}>
           <Avatar.Image
             size={180}
@@ -23,30 +56,32 @@ export default function ProfileScreen() {
             style={{ backgroundColor: colors.primary }}
           />
           <Text variant="headlineSmall" style={[styles.nome, { color: colors.primary }]}>
-            Nome da Usuária
+            {usuario.nome || 'Nome da Usuária'}
           </Text>
           <Text style={styles.role}>Cliente Premium</Text>
         </View>
 
-        {/* Card com informações */}
         <View style={styles.card}>
           <View style={styles.infoGroup}>
             <Text style={styles.label}>E-mail</Text>
-            <Text style={styles.info}>email@exemplo.com</Text>
+            <Text style={styles.info}>{usuario.email || 'email@exemplo.com'}</Text>
           </View>
 
           <View style={styles.infoGroup}>
             <Text style={styles.label}>Telefone</Text>
-            <Text style={styles.info}>+55 11 91234-5678</Text>
+            <Text style={styles.info}>{usuario.telefone || '+55 11 91234-5678'}</Text>
           </View>
 
           <View style={styles.infoGroup}>
             <Text style={styles.label}>Membro desde</Text>
-            <Text style={styles.info}>jan/2024</Text>
+            <Text style={styles.info}>
+              {usuario.dataCadastro
+                ? formatarData(usuario.dataCadastro)
+                : 'Desconhecido'}
+            </Text>
           </View>
         </View>
 
-        {/* Botão */}
         <Button
           mode="outlined"
           style={styles.botao}

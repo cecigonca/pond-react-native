@@ -29,7 +29,8 @@ export default function CadastroScreen() {
         return;
       }
 
-      const novoUsuario = { nome, email, telefone, senha };
+      const dataCadastro = new Date().toISOString();
+      const novoUsuario = { nome, email, telefone, senha, dataCadastro};
       const atualizados = [...usuarios, novoUsuario];
       await AsyncStorage.setItem('usuarios', JSON.stringify(atualizados));
 
