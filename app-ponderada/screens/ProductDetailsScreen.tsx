@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Image, ScrollView, Modal, Pressable } from 'react-native';
 import { Appbar, Text, IconButton, useTheme } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -8,7 +8,6 @@ export default function ProductDetailsScreen() {
   const navigation = useNavigation();
   const route = useRoute();
 
-  // Recebe os dados passados ao navegar
   const { produto } = route.params as {
     produto: {
       nome: string;
@@ -18,6 +17,8 @@ export default function ProductDetailsScreen() {
     };
   };
 
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <>
       <Appbar.Header style={{ backgroundColor: colors.background, elevation: 0 }}>
@@ -26,7 +27,9 @@ export default function ProductDetailsScreen() {
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={styles.container}>
-        <Image source={produto.imagem} style={styles.image} resizeMode="cover" />
+        <Pressable onPress={() => setModalVisible(true)}>
+          <Image source={produto.imagem} style={styles.image} resizeMode="cover" />
+        </Pressable>
 
         <View style={styles.content}>
           <View style={styles.headerRow}>
@@ -48,6 +51,12 @@ export default function ProductDetailsScreen() {
           <Text style={styles.descricao}>{produto.descricao}</Text>
         </View>
       </ScrollView>
+
+      <Modal visible={modalVisible} transparent={true} animationType="fade">
+        <Pressable style={styles.modalContainer} onPress={() => setModalVisible(false)}>
+          <Image source={produto.imagem} style={styles.fullscreenImage} resizeMode="contain" />
+        </Pressable>
+      </Modal>
     </>
   );
 }
@@ -82,5 +91,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     lineHeight: 22,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#000000dd',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenImage: {
+    width: '90%',
+    height: '80%',
   },
 });
