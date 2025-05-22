@@ -1,21 +1,46 @@
-import React from 'react';
-import { View, FlatList, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
-import { Appbar, FAB, useTheme } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Appbar, Text, useTheme, FAB } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import { gerarProdutosFalsos, Produto } from '../utils/FakeProducts';
 
-const produtos = Array.from({ length: 10 }, (_, i) => ({
-  id: i.toString(),
-  nome: `Produto ${i + 1}`,
-  preco: `R$ ${(i + 1) * 10},00`,
-  descricao: `Descrição do produto ${i + 1}`,
-  imagem: require('../assets/produto.png'), // ajuste para suas imagens reais
-}));
+const TAMANHO_PAGINA = 20;
+const TOTAL_PRODUTOS = 10000;
 
 export default function HomeScreen() {
-  const [fabOpen, setFabOpen] = React.useState(false);
-  const { colors } = useTheme();
   const navigation = useNavigation<any>();
+  const { colors } = useTheme();
+
+  const [todosProdutos, setTodosProdutos] = useState<Produto[]>([]);
+  const [produtosVisiveis, setProdutosVisiveis] = useState<Produto[]>([]);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [carregandoMais, setCarregandoMais] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
+
+  useEffect(() => {
+    const gerarProdutos = () => {
+      const produtos = gerarProdutosFalsos(TOTAL_PRODUTOS);
+      setTodosProdutos(produtos);
+      setProdutosVisiveis(produtos.slice(0, TAMANHO_PAGINA));
+    };
+    gerarProdutos();
+  }, []);
+
+  const carregarMais = () => {
+    if (carregandoMais) return;
+
+    setCarregandoMais(true);
+    setTimeout(() => {
+      const proximaPagina = paginaAtual + 1;
+      const inicio = (proximaPagina - 1) * TAMANHO_PAGINA;
+      const fim = inicio + TAMANHO_PAGINA;
+      const novosProdutos = todosProdutos.slice(inicio, fim);
+      setProdutosVisiveis((prev) => [...prev, ...novosProdutos]);
+      setPaginaAtual(proximaPagina);
+      setCarregandoMais(false);
+    }, 1000); // Simula carregamento
+  };
 
   const abrirCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -61,24 +86,13 @@ export default function HomeScreen() {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Appbar.Content
-          title="Lista de Produtos"
-          titleStyle={{ color: colors.primary }}
-        />
-        <Appbar.Action
-          icon="bell"
-          color={colors.primary}
-          onPress={() => navigation.navigate('Notifications')}
-        />
-        <Appbar.Action
-          icon="account"
-          color={colors.primary}
-          onPress={() => navigation.navigate('Profile')}
-        />
+        <Appbar.Content title="Produtos" titleStyle={{ color: colors.primary }} />
+        <Appbar.Action icon="bell" color={colors.primary} onPress={() => navigation.navigate('Notifications')} />
+        <Appbar.Action icon="account" color={colors.primary} onPress={() => navigation.navigate('Profile')} />
       </Appbar.Header>
 
       <FlatList
-        data={produtos}
+        data={produtosVisiveis}
         keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={styles.galeria}
@@ -87,26 +101,29 @@ export default function HomeScreen() {
             style={styles.itemGaleria}
             onPress={() =>
               navigation.navigate('ProductDetails', {
-                produto: {
-                  nome: item.nome,
-                  descricao: item.descricao,
-                  preco: item.preco,
-                  imagem: item.imagem,
-                },
+                produto: item,
               })
             }
           >
             <Image source={item.imagem} style={styles.fotoProduto} />
-            <Text style={[styles.nomeProduto, { color: colors.primary }]}>
-              {item.nome}
-            </Text>
+            <Text style={[styles.nomeProduto, { color: colors.primary }]}>{item.nome}</Text>
           </TouchableOpacity>
         )}
+        onEndReached={carregarMais}
+        onEndReachedThreshold={0.3}
+        ListFooterComponent={
+          carregandoMais ? (
+            <View style={styles.loading}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={{ color: colors.primary, marginTop: 6 }}>Carregando mais...</Text>
+            </View>
+          ) : null
+        }
       />
 
       <FAB.Group
         open={fabOpen}
-        visible={true}
+        visible
         icon={fabOpen ? 'close' : 'plus'}
         actions={[
           {
@@ -118,7 +135,7 @@ export default function HomeScreen() {
           },
           {
             icon: 'image',
-            label: 'Upload de imagem',
+            label: 'Galeria',
             onPress: abrirGaleria,
             color: colors.onPrimary,
             style: { backgroundColor: colors.primary },
@@ -136,6 +153,7 @@ const styles = StyleSheet.create({
   galeria: {
     paddingHorizontal: 12,
     paddingTop: 16,
+    paddingBottom: 24,
   },
   itemGaleria: {
     flex: 1,
@@ -155,6 +173,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
+  },
+  loading: {
+    paddingVertical: 20,
+    alignItems: 'center',
   },
   logo: {
     width: 32,
