@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, FlatList, StyleSheet, Image } from 'react-native';
-import { Appbar, Card, FAB, useTheme } from 'react-native-paper';
+import { View, FlatList, StyleSheet, Image, Text } from 'react-native';
+import { Appbar, FAB, useTheme } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 
 const produtos = Array.from({ length: 10 }, (_, i) => ({
   id: i.toString(),
   nome: `Produto ${i + 1}`,
-  descricao: `Descrição do produto ${i + 1}`,
+  imagem: require('../assets/produto.png'), // substitua por sua imagem real
 }));
 
 export default function HomeScreen() {
@@ -15,7 +15,6 @@ export default function HomeScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
 
-  // 📷 Abertura da câmera
   const abrirCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
@@ -34,7 +33,6 @@ export default function HomeScreen() {
     }
   };
 
-  // 🖼️ Abertura da galeria
   const abrirGaleria = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -55,7 +53,6 @@ export default function HomeScreen() {
 
   return (
     <>
-      {/* Appbar com fundo claro e ícones dourados */}
       <Appbar.Header style={{ backgroundColor: colors.background }}>
         <Image
           source={require('../assets/logo.png')}
@@ -78,27 +75,21 @@ export default function HomeScreen() {
         />
       </Appbar.Header>
 
-      {/* Lista de produtos */}
       <FlatList
         data={produtos}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.lista}
+        numColumns={2}
+        contentContainerStyle={styles.galeria}
         renderItem={({ item }) => (
-          <Card
-            style={[styles.card, { backgroundColor: colors.surface }]}
-            mode="elevated"
-          >
-            <Card.Title
-              title={item.nome}
-              subtitle={item.descricao}
-              titleStyle={{ color: colors.primary }}
-              subtitleStyle={{ color: colors.onSurface }}
-            />
-          </Card>
+          <View style={styles.itemGaleria}>
+            <Image source={item.imagem} style={styles.fotoProduto} />
+            <Text style={[styles.nomeProduto, { color: colors.primary }]}>
+              {item.nome}
+            </Text>
+          </View>
         )}
       />
 
-      {/* FAB com ações da paleta personalizada */}
       <FAB.Group
         open={fabOpen}
         visible={true}
@@ -128,12 +119,28 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  lista: {
-    padding: 8,
+  galeria: {
+    paddingHorizontal: 12,
+    paddingTop: 16,
   },
-  card: {
-    marginBottom: 8,
+  itemGaleria: {
+    flex: 1,
+    alignItems: 'center',
+    margin: 8,
+    backgroundColor: '#F9F6F3',
     borderRadius: 12,
+    padding: 12,
+  },
+  fotoProduto: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  nomeProduto: {
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
   },
   logo: {
     width: 32,
