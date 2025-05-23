@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+// HomeScreen.tsx
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Appbar, Text, useTheme, FAB } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { gerarProdutosFalsos, Produto } from '../utils/FakeProducts';
 
 const TAMANHO_PAGINA = 20;
@@ -17,29 +20,43 @@ export default function HomeScreen() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [carregandoMais, setCarregandoMais] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
+  const [produtosReais, setProdutosReais] = useState<Produto[]>([]);
 
+  // Carregar produtos reais de AsyncStorage toda vez que a tela ganhar foco
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const email = await AsyncStorage.getItem('usuarioLogado');
+        const data = await AsyncStorage.getItem(`produtosReais_${email}`);
+        setProdutosReais(data ? JSON.parse(data) : []);
+      })();
+    }, [])
+  );
+
+  // Gerar fakes e inicializar lista (com reais na frente)
   useEffect(() => {
-    const gerarProdutos = () => {
-      const produtos = gerarProdutosFalsos(TOTAL_PRODUTOS);
-      setTodosProdutos(produtos);
-      setProdutosVisiveis(produtos.slice(0, TAMANHO_PAGINA));
+    const gerar = () => {
+      const fakes = gerarProdutosFalsos(TOTAL_PRODUTOS);
+      setTodosProdutos(fakes);
+      setProdutosVisiveis([ ...produtosReais, ...fakes.slice(0, TAMANHO_PAGINA) ]);
+      setPaginaAtual(1);
     };
-    gerarProdutos();
-  }, []);
+    gerar();
+  }, [produtosReais]);
 
   const carregarMais = () => {
     if (carregandoMais) return;
-
     setCarregandoMais(true);
+
     setTimeout(() => {
       const proximaPagina = paginaAtual + 1;
-      const inicio = (proximaPagina - 1) * TAMANHO_PAGINA;
-      const fim = inicio + TAMANHO_PAGINA;
-      const novosProdutos = todosProdutos.slice(inicio, fim);
-      setProdutosVisiveis((prev) => [...prev, ...novosProdutos]);
+      const inicioFake = (proximaPagina - 1) * TAMANHO_PAGINA;
+      const fimFake = inicioFake + TAMANHO_PAGINA;
+      const novosFake = todosProdutos.slice(inicioFake, fimFake);
+      setProdutosVisiveis(prev => [ ...prev, ...novosFake ]);
       setPaginaAtual(proximaPagina);
       setCarregandoMais(false);
-    }, 1000); // Simula carregamento
+    }, 1000);
   };
 
   const abrirCamera = async () => {
@@ -48,15 +65,13 @@ export default function HomeScreen() {
       alert('Permissão para acessar a câmera negada.');
       return;
     }
-
     const resultado = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 0.8,
     });
-
     if (!resultado.canceled) {
-      console.log('Imagem capturada:', resultado.assets[0].uri);
+      navigation.navigate('AddProduct', { imageUri: resultado.assets[0].uri });
     }
   };
 
@@ -66,15 +81,13 @@ export default function HomeScreen() {
       alert('Permissão para acessar a galeria negada.');
       return;
     }
-
     const resultado = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 0.8,
     });
-
     if (!resultado.canceled) {
-      console.log('Imagem selecionada:', resultado.assets[0].uri);
+      navigation.navigate('AddProduct', { imageUri: resultado.assets[0].uri });
     }
   };
 
@@ -93,17 +106,13 @@ export default function HomeScreen() {
 
       <FlatList
         data={produtosVisiveis}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         numColumns={2}
         contentContainerStyle={styles.galeria}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.itemGaleria}
-            onPress={() =>
-              navigation.navigate('ProductDetails', {
-                produto: item,
-              })
-            }
+            onPress={() => navigation.navigate('ProductDetails', { produto: item })}
           >
             <Image source={item.imagem} style={styles.fotoProduto} />
             <Text style={[styles.nomeProduto, { color: colors.primary }]}>{item.nome}</Text>
@@ -130,15 +139,15 @@ export default function HomeScreen() {
             icon: 'camera',
             label: 'Câmera',
             onPress: abrirCamera,
-            color: colors.onPrimary,
             style: { backgroundColor: colors.primary },
+            color: colors.onPrimary,
           },
           {
             icon: 'image',
             label: 'Galeria',
             onPress: abrirGaleria,
-            color: colors.onPrimary,
             style: { backgroundColor: colors.primary },
+            color: colors.onPrimary,
           },
         ]}
         onStateChange={({ open }) => setFabOpen(open)}
