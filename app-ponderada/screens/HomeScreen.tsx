@@ -1,6 +1,13 @@
 // HomeScreen.tsx
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator
+} from 'react-native';
 import { Appbar, Text, useTheme, FAB } from 'react-native-paper';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
@@ -15,14 +22,18 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
 
-  const [todosProdutos, setTodosProdutos] = useState<Produto[]>([]);
+  // Gera a lista de falsos apenas uma vez
+  const [todosProdutos] = useState<Produto[]>(() =>
+    gerarProdutosFalsos(TOTAL_PRODUTOS)
+  );
+
+  const [produtosReais, setProdutosReais] = useState<Produto[]>([]);
   const [produtosVisiveis, setProdutosVisiveis] = useState<Produto[]>([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [carregandoMais, setCarregandoMais] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
-  const [produtosReais, setProdutosReais] = useState<Produto[]>([]);
 
-  // Carregar produtos reais de AsyncStorage toda vez que a tela ganhar foco
+  // 1) Carrega produtos reais toda vez que a tela ganha foco
   useFocusEffect(
     useCallback(() => {
       (async () => {
@@ -33,17 +44,16 @@ export default function HomeScreen() {
     }, [])
   );
 
-  // Gerar fakes e inicializar lista (com reais na frente)
+  // 2) Quando produtosReais muda (ou na monta), monta a primeira página
   useEffect(() => {
-    const gerar = () => {
-      const fakes = gerarProdutosFalsos(TOTAL_PRODUTOS);
-      setTodosProdutos(fakes);
-      setProdutosVisiveis([ ...produtosReais, ...fakes.slice(0, TAMANHO_PAGINA) ]);
-      setPaginaAtual(1);
-    };
-    gerar();
-  }, [produtosReais]);
+    setProdutosVisiveis([
+      ...produtosReais,
+      ...todosProdutos.slice(0, TAMANHO_PAGINA),
+    ]);
+    setPaginaAtual(1);
+  }, [produtosReais, todosProdutos]);
 
+  // 3) Scroll infinito para fake products
   const carregarMais = () => {
     if (carregandoMais) return;
     setCarregandoMais(true);
@@ -53,12 +63,14 @@ export default function HomeScreen() {
       const inicioFake = (proximaPagina - 1) * TAMANHO_PAGINA;
       const fimFake = inicioFake + TAMANHO_PAGINA;
       const novosFake = todosProdutos.slice(inicioFake, fimFake);
-      setProdutosVisiveis(prev => [ ...prev, ...novosFake ]);
+
+      setProdutosVisiveis(prev => [...prev, ...novosFake]);
       setPaginaAtual(proximaPagina);
       setCarregandoMais(false);
     }, 1000);
   };
 
+  // 4) Ações da FAB: câmera e galeria
   const abrirCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
@@ -99,9 +111,20 @@ export default function HomeScreen() {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Appbar.Content title="Produtos" titleStyle={{ color: colors.primary }} />
-        <Appbar.Action icon="bell" color={colors.primary} onPress={() => navigation.navigate('Notifications')} />
-        <Appbar.Action icon="account" color={colors.primary} onPress={() => navigation.navigate('Profile')} />
+        <Appbar.Content
+          title="Produtos"
+          titleStyle={{ color: colors.primary }}
+        />
+        <Appbar.Action
+          icon="bell"
+          color={colors.primary}
+          onPress={() => navigation.navigate('Notifications')}
+        />
+        <Appbar.Action
+          icon="account"
+          color={colors.primary}
+          onPress={() => navigation.navigate('Profile')}
+        />
       </Appbar.Header>
 
       <FlatList
@@ -112,10 +135,16 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.itemGaleria}
-            onPress={() => navigation.navigate('ProductDetails', { produto: item })}
+            onPress={() =>
+              navigation.navigate('ProductDetails', { produto: item })
+            }
           >
             <Image source={item.imagem} style={styles.fotoProduto} />
-            <Text style={[styles.nomeProduto, { color: colors.primary }]}>{item.nome}</Text>
+            <Text
+              style={[styles.nomeProduto, { color: colors.primary }]}
+            >
+              {item.nome}
+            </Text>
           </TouchableOpacity>
         )}
         onEndReached={carregarMais}
@@ -124,7 +153,9 @@ export default function HomeScreen() {
           carregandoMais ? (
             <View style={styles.loading}>
               <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={{ color: colors.primary, marginTop: 6 }}>Carregando mais...</Text>
+              <Text style={{ color: colors.primary, marginTop: 6 }}>
+                Carregando mais...
+              </Text>
             </View>
           ) : null
         }
