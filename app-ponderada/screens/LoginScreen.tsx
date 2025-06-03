@@ -58,6 +58,10 @@ export default function LoginScreen() {
       <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
         <Text style={[styles.link, { color: colors.primary }]}>Não possui conta? Cadastre-se</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        <Text style={[styles.link, { color: colors.primary }]}>Esqueci minha senha</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -67,6 +71,6 @@ const styles = StyleSheet.create({
   title: { marginBottom: 32, textAlign: 'center' },
   input: { marginBottom: 16 },
   button: { marginTop: 8 },
-  link: { marginTop: 24, textAlign: 'center' },
+  link: { marginTop: 16, textAlign: 'center' },
   logo: { width: 200, height: 200, alignSelf: 'center', marginBottom: 28 },
 });

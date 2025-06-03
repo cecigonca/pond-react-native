@@ -11,6 +11,8 @@ import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import CadastroScreen from './screens/CadastroScreen';
 import FavoritesScreen from './screens/FavoritesScreen';
 import AddProductScreen from './screens/AddProductScreen';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +46,8 @@ export default function App() {
           <Stack.Screen name="Cadastro" component={CadastroScreen} />
           <Stack.Screen name="Favorites" component={FavoritesScreen} />
           <Stack.Screen name="AddProduct" component={AddProductScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
