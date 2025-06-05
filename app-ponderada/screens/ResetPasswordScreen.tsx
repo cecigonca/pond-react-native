@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Alert, StyleSheet } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ResetPasswordScreen() {
   const navigation = useNavigation<any>();
@@ -19,7 +20,7 @@ export default function ResetPasswordScreen() {
 
     setLoading(true);
     try {
-      const resp = await fetch('http://10.150.0.183:3001/api/reset-password/verify', {
+      const resp = await fetch('http://192.168.86.249:3001/api/reset-password/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: codigo, newPassword: novaSenha }),
@@ -28,6 +29,16 @@ export default function ResetPasswordScreen() {
       const data = await resp.json();
 
       if (resp.ok) {
+        // Atualiza senha no AsyncStorage
+        const dados = await AsyncStorage.getItem('usuarios');
+        const lista = dados ? JSON.parse(dados) : [];
+
+        const atualizados = lista.map((u: any) =>
+          u.email === email ? { ...u, senha: novaSenha } : u
+        );
+
+        await AsyncStorage.setItem('usuarios', JSON.stringify(atualizados));
+
         Alert.alert('Sucesso', 'Senha redefinida com sucesso!');
         navigation.navigate('Login');
       } else {

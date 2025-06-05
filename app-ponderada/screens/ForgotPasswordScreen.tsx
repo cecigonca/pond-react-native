@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Alert, StyleSheet } from 'react-native';
-import { TextInput, Button, Text, useTheme } from 'react-native-paper';
+import { TextInput, Button, Text, useTheme, Appbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ForgotPasswordScreen() {
@@ -44,41 +44,48 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text variant="titleLarge" style={{ marginBottom: 20 }}>
-        Recuperar Senha
-      </Text>
+    <View style={{ flex: 1 }}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} color={colors.primary} />
+        <Appbar.Content title="Recuperar Senha" />
+      </Appbar.Header>
 
-      {etapa === 'email' ? (
-        <>
-          <TextInput
-            label="E-mail"
-            value={email}
-            onChangeText={setEmail}
-            mode="outlined"
-            keyboardType="email-address"
-            style={styles.input}
-          />
-          <Button mode="contained" onPress={enviarCodigo} loading={loading}>
-            Enviar código
-          </Button>
-        </>
-      ) : (
-        <>
-          <Text style={{ marginBottom: 8 }}>Código enviado para: {email}</Text>
-          <TextInput
-            label="Código de verificação"
-            value={codigo}
-            onChangeText={setCodigo}
-            keyboardType="numeric"
-            mode="outlined"
-            style={styles.input}
-          />
-          <Button mode="contained" onPress={verificarCodigo}>
-            Verificar código
-          </Button>
-        </>
-      )}
+      <View style={styles.container}>
+        <Text variant="titleLarge" style={{ marginBottom: 16 }}>
+          {etapa === 'email' ? 'Informe seu e-mail' : 'Digite o código'}
+        </Text>
+
+        {etapa === 'email' ? (
+          <>
+            <TextInput
+              label="E-mail"
+              value={email}
+              onChangeText={setEmail}
+              mode="outlined"
+              keyboardType="email-address"
+              style={styles.input}
+            />
+            <Button mode="contained" onPress={enviarCodigo} loading={loading}>
+              Enviar código
+            </Button>
+          </>
+        ) : (
+          <>
+            <Text style={{ marginBottom: 8 }}>Código enviado para: {email}</Text>
+            <TextInput
+              label="Código de verificação"
+              value={codigo}
+              onChangeText={setCodigo}
+              keyboardType="numeric"
+              mode="outlined"
+              style={styles.input}
+            />
+            <Button mode="contained" onPress={verificarCodigo}>
+              Verificar código
+            </Button>
+          </>
+        )}
+      </View>
     </View>
   );
 }
