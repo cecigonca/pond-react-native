@@ -14,7 +14,7 @@ export default function ForgotPasswordScreen() {
   const enviarCodigo = async () => {
     setLoading(true);
     try {
-      const resp = await fetch('http://10.150.0.183:3001/api/reset-password/request', {
+      const resp = await fetch('http://192.168.86.39:3001/api/reset-password/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
