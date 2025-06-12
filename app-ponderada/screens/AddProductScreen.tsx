@@ -1,4 +1,3 @@
-// AddProductScreen.tsx
 import React, { useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { TextInput, Button, Text, Appbar, useTheme } from 'react-native-paper';

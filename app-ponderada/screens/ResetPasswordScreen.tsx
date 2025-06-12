@@ -29,7 +29,7 @@ export default function ResetPasswordScreen() {
       const data = await resp.json();
 
       if (resp.ok) {
-        // Atualiza senha no AsyncStorage
+        // atualiza senha no AsyncStorage
         const dados = await AsyncStorage.getItem('usuarios');
         const lista = dados ? JSON.parse(dados) : [];
 
