@@ -44,10 +44,10 @@ export default function LoginScreen() {
 
       <TextInput
         label="Senha"
+        // secureTextEntry
         value={senha}
         onChangeText={setSenha}
         mode="outlined"
-        secureTextEntry
         style={styles.input}
       />
 

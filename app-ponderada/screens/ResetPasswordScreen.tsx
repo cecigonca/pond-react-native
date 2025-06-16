@@ -20,7 +20,7 @@ export default function ResetPasswordScreen() {
 
     setLoading(true);
     try {
-      const resp = await fetch('http://192.168.86.39:3001/api/reset-password/verify', {
+      const resp = await fetch('http://192.168.86.248:3001/api/reset-password/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: codigo, newPassword: novaSenha }),
@@ -58,7 +58,7 @@ export default function ResetPasswordScreen() {
       </Text>
       <TextInput
         label="Digite a nova senha"
-        secureTextEntry
+        // secureTextEntry
         value={novaSenha}
         onChangeText={setNovaSenha}
         mode="outlined"

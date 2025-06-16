@@ -122,7 +122,7 @@ export default function EditProfileScreen() {
         <TextInput label="Nome" mode="outlined" value={nome} onChangeText={setNome} style={styles.input} />
         <TextInput label="E-mail" mode="outlined" value={email} disabled style={styles.input} />
         <TextInput label="Telefone" mode="outlined" value={telefone} onChangeText={setTelefone} keyboardType="phone-pad" style={styles.input} />
-        <TextInput label="Senha" mode="outlined" value={senha} onChangeText={setSenha} secureTextEntry style={styles.input} />
+        <TextInput label="Senha" mode="outlined" value={senha} onChangeText={setSenha} style={styles.input} /> 
 
         <Button mode="contained" onPress={salvarAlteracoes} style={styles.button} labelStyle={{ fontSize: 16 }}>
           Salvar Alterações
