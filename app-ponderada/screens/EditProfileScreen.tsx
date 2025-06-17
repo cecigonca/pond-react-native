@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Text, TextInput, Button, Appbar, useTheme } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { TextInput, Button, Text, Appbar, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
 import { adicionarNotificacao } from '../utils/Notifications';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function EditProfileScreen() {
-  const navigation = useNavigation();
   const { colors } = useTheme();
-
+  const navigation = useNavigation();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');

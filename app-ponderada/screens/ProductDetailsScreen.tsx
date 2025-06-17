@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Image, ScrollView, Modal, Pressable } from 'react-native';
-import { Appbar, Text, IconButton, useTheme } from 'react-native-paper';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { Text, Appbar, useTheme, IconButton } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { adicionarNotificacao } from '../utils/Notifications';
 
 export default function ProductDetailsScreen() {

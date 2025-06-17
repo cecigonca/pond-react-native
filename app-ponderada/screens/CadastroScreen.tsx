@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, Image, ScrollView } from 'react-native';
-import { TextInput, Button, Text, useTheme, Card, Appbar } from 'react-native-paper';
+import { View, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import { TextInput, Button, Text, Appbar, useTheme, Card } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { adicionarNotificacao } from '../utils/Notifications';
@@ -8,7 +8,6 @@ import { adicionarNotificacao } from '../utils/Notifications';
 export default function CadastroScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
-
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');

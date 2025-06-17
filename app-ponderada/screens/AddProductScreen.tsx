@@ -10,7 +10,6 @@ export default function AddProductScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
   const { imageUri } = (route.params as any) || {};
-
   const [nome, setNome] = useState('');
   const [preco, setPreco] = useState('');
   const [descricao, setDescricao] = useState('');

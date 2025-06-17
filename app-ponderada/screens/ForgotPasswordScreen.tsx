@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Alert, StyleSheet } from 'react-native';
-import { TextInput, Button, Text, useTheme, Appbar } from 'react-native-paper';
+import { View, StyleSheet, Alert } from 'react-native';
+import { TextInput, Button, Text, Appbar, useTheme } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ForgotPasswordScreen() {

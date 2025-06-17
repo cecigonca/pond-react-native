@@ -1,19 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, Avatar, useTheme, Button, Appbar } from 'react-native-paper';
+import { Button, Text, Appbar, useTheme, Avatar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect, StackActions } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation();
-  const [usuario, setUsuario] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    dataCadastro: '',
-    imagemPerfil: '',
-  });
+  const [usuario, setUsuario] = useState({nome: '', email: '', telefone: '', dataCadastro: '', imagemPerfil: '',});
 
   useFocusEffect(
     useCallback(() => {

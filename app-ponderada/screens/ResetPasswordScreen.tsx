@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { View, Alert, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function ResetPasswordScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
   const { email, codigo } = route.params as { email: string; codigo: string };
-
   const [novaSenha, setNovaSenha] = useState('');
   const [loading, setLoading] = useState(false);
 

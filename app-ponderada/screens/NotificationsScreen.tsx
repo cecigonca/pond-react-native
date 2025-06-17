@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { Appbar, Text, List, useTheme } from 'react-native-paper';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { Text, Appbar, useTheme, List } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 export default function NotificationsScreen() {
-  const navigation = useNavigation();
   const { colors } = useTheme();
+  const navigation = useNavigation();
   const [notificacoes, setNotificacoes] = useState<any[]>([]);
 
   useFocusEffect(

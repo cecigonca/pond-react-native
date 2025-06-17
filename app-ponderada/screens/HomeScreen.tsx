@@ -1,18 +1,17 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import {View, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator} from 'react-native';
-import { Appbar, Text, useTheme, FAB } from 'react-native-paper';
+import React, { useState, useEffect, useCallback } from 'react';
+import {View, StyleSheet, Image, TouchableOpacity, FlatList, ActivityIndicator} from 'react-native';
+import { Text, Appbar, useTheme, FAB } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { gerarProdutosFalsos, Produto } from '../utils/FakeProducts';
 
 const TAMANHO_PAGINA = 20;
 const TOTAL_PRODUTOS = 10000;
 
 export default function HomeScreen() {
-  const navigation = useNavigation<any>();
   const { colors } = useTheme();
-
+  const navigation = useNavigation<any>();
   // gera produtos falsos 
   const [todosProdutos] = useState<Produto[]>(() =>
     gerarProdutosFalsos(TOTAL_PRODUTOS)
